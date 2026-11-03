@@ -35,11 +35,11 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}.hidden{display:none!
   <div id="activeRoutinePanel" class="muted" style="margin-top:12px">Carrega una rutina per començar.</div>
   <div class="center muted" id="exerciseLabel" style="margin-top:12px">Cap exercici seleccionat</div>
   <div class="timer" id="clock">00:00</div><div class="center muted" id="timerState">Preparat · carrega una rutina</div>
-  <div class="grid3" style="margin-top:12px"><div class="stat"><strong id="sets">0/0</strong><span>Sèries</span></div><div class="stat"><strong id="reps">0</strong><span>Repeticions</span></div><div class="stat"><strong id="doneExercises">0</strong><span>Exercicis avui</span></div></div>
-  <div class="timerbuttons" style="margin-top:12px"><button class="btn" id="timerStart" disabled>Inicia</button><button class="btn secondary" id="timerPause" disabled>Pausa</button><button class="btn secondary" id="nextSeries" disabled>Següent sèrie</button><button class="btn secondary" id="timerReset">Reinicia rutina</button></div>
+  <div class="grid2" style="margin-top:12px"><div class="stat"><strong id="sets">0/0</strong><span>Sèries completades</span></div><div class="stat"><strong id="reps">0</strong><span>Repeticions completades</span></div><div class="stat"><strong id="incompleteCount">0</strong><span>Sèries incompletes</span></div><div class="stat"><strong id="doneExercises">0</strong><span>Exercicis avui</span></div></div>
+  <div class="timerbuttons" style="margin-top:12px"><button class="btn" id="timerStart" disabled>Inicia</button><button class="btn secondary" id="timerPause" disabled>Pausa</button><button class="btn secondary" id="nextSeries" disabled>Següent sèrie</button><button class="btn danger" id="abandonSeries" disabled>Abandona sèrie</button><button class="btn secondary" id="timerReset">Reinicia rutina</button></div>
   <div style="margin-top:9px"><label>So d'avís</label><select id="soundChoice"><option value="0">Clàssic</option><option value="1">Campana</option><option value="2">Doble toc</option><option value="3">Suau</option><option value="4">Greu</option><option value="5">Electrònic</option><option value="6">Alerta</option><option value="7">Marimba</option><option value="8">Ascendent</option><option value="9">Descendent</option></select></div>
-  <button class="btn secondary small" id="testSound" style="width:100%;margin-top:8px">Prova el so</button>
-  <p class="muted">Cada sèrie es completa automàticament quan acaba el temps configurat. Les repeticions previstes se sumen llavors. La pausa serà cronometrada o esperarà que premis «Següent sèrie», segons la rutina. Mantén ENTRENA oberta en primer pla per sentir els avisos.</p>
+  <button class="btn secondary small" id="testSound" style="width:100%;margin-top:8px">Activa i prova el so</button>
+  <p class="muted">L'avís sonarà segons el ritme de repeticions definit a cada exercici. Quan acabi el temps es registrarà la sèrie; si l'abandones, quedarà marcada com a incompleta. Mantén ENTRENA en primer pla per garantir els avisos.</p>
  </div>
  <div class="card"><h2>Objectiu d'aquesta setmana</h2><div class="grid3"><div class="stat"><strong id="goalNow">0</strong><span>Dies actius</span></div><div class="stat"><strong id="goalTarget">3</strong><span>Objectiu</span></div><div class="stat"><strong id="goalPct">0%</strong><span>Completat</span></div></div><p class="muted" id="goalText"></p><button class="btn secondary small" id="editGoal">Canvia objectiu</button></div>
 </section>
@@ -49,8 +49,8 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}.hidden{display:none!
   <label>Nom de la rutina</label><input id="routineName" placeholder="Ex. Pit i tríceps">
   <div class="row" style="margin-top:9px"><div><label>Grup muscular</label><select id="routineMuscle"><option>Pit</option><option>Esquena</option><option>Cames</option><option>Braços</option><option>Espatlles</option><option>Abdominals</option><option>Cardio</option><option>Cos sencer</option><option>Altres</option></select></div><div><label>Exercici</label><input id="routineExercise" placeholder="Ex. Press banca"></div></div>
   <div class="grid2" style="margin-top:9px"><div><label>Sèries</label><input id="routineSets" type="number" min="1" value="3"></div><div><label>Repeticions per sèrie</label><input id="routineReps" type="number" min="1" value="12"></div></div>
-  <div class="grid2" style="margin-top:9px"><div><label>Temps de cada sèrie (segons)</label><input id="routineWork" type="number" min="1" value="30"></div><div><label>Tipus de pausa</label><select id="routineRestMode"><option value="timed">Pausa cronometrada</option><option value="manual">Fins a prémer següent sèrie</option></select></div></div>
-  <div style="margin-top:9px"><label>Durada de la pausa (segons, si és cronometrada)</label><input id="routineRest" type="number" min="0" value="30"></div>
+  <div class="grid2" style="margin-top:9px"><div><label>Temps de cada sèrie (segons)</label><input id="routineWork" type="number" min="1" value="30"></div><div><label>Avís sonor cada X repeticions</label><input id="routineBeepEvery" type="number" min="1" value="1"></div></div>
+  <div class="grid2" style="margin-top:9px"><div><label>Tipus de pausa</label><select id="routineRestMode"><option value="timed">Pausa cronometrada</option><option value="manual">Fins a prémer següent sèrie</option></select></div><div><label>Durada pausa (segons)</label><input id="routineRest" type="number" min="0" value="30"></div></div>
   <button class="btn" id="addRoutineExercise" style="width:100%;margin-top:10px">Afegeix exercici a la rutina</button><div id="routineDraft" class="muted" style="margin-top:9px">Encara no has afegit exercicis.</div>
   <button class="btn" id="saveRoutine" style="width:100%;margin-top:10px">Desa rutina</button>
  </div><div class="card"><h2>Les meves rutines</h2><div id="routineList" class="muted">Encara no hi ha rutines creades.</div></div>
@@ -67,7 +67,7 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}.hidden{display:none!
 
 <section id="progress" class="page">
  <div class="card"><h2>Evolució de les repeticions</h2><label>Exercici</label><select id="chartExercise"><option value="">Tots els exercicis</option></select><canvas id="chart" width="700" height="260"></canvas><p class="muted">Repeticions registrades per sessió (últims 12 registres).</p></div>
- <div class="card"><h2>Resum dels últims 30 dies</h2><div class="grid3"><div class="stat"><strong id="mDays">0</strong><span>Dies actius</span></div><div class="stat"><strong id="mSets">0</strong><span>Sèries</span></div><div class="stat"><strong id="mReps">0</strong><span>Repeticions</span></div></div></div>
+ <div class="card"><h2>Resum dels últims 30 dies</h2><div class="grid2"><div class="stat"><strong id="mDays">0</strong><span>Dies actius</span></div><div class="stat"><strong id="mSets">0</strong><span>Sèries completades</span></div><div class="stat"><strong id="mReps">0</strong><span>Repeticions</span></div><div class="stat"><strong id="mIncomplete">0</strong><span>Sèries incompletes</span></div></div></div>
 </section>
 
 <section id="data" class="page">
@@ -87,65 +87,82 @@ const pad=n=>String(n).padStart(2,'0'),dateKey=d=>d.getFullYear()+'-'+pad(d.getM
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=s=>pad(Math.floor(s/60))+':'+pad(s%60);
 let reps=0,sets=0,routineDraft=[],activeRoutine=null,activeRoutineIndex=0,monthDate=new Date(new Date().getFullYear(),new Date().getMonth(),1);
-let session={stage:'idle',running:false,remaining:0,startAt:0,seriesDone:0,repsDone:0,exerciseReps:0,exerciseSets:0};
+let session={stage:'idle',running:false,remaining:0,startAt:0,seriesDone:0,seriesAttempted:0,incomplete:0,repsDone:0,exerciseReps:0,exerciseSets:0,nextCueAt:0};
 let timerLoop=null,wakeLock=null,audioContext=null;
 const soundOptions=[{f:[880],w:'sine',d:.18},{f:[660,990],w:'sine',d:.13},{f:[740,740],w:'square',d:.09},{f:[520],w:'triangle',d:.28},{f:[330],w:'sine',d:.32},{f:[1040],w:'square',d:.12},{f:[880,660,880],w:'sawtooth',d:.09},{f:[523,659,784],w:'triangle',d:.12},{f:[440,660,880],w:'sine',d:.11},{f:[880,660,440],w:'triangle',d:.14}];
-async function sound(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)throw new Error('Audio no disponible');if(!audioContext)audioContext=new C();if(audioContext.state==='suspended')await audioContext.resume();const q=soundOptions[Math.max(0,Math.min(9,Number(db.sound)||0))];q.f.forEach((freq,i)=>{const at=audioContext.currentTime+i*(q.d+.035),o=audioContext.createOscillator(),g=audioContext.createGain();o.type=q.w;o.frequency.setValueAtTime(freq,at);g.gain.setValueAtTime(.0001,at);g.gain.exponentialRampToValueAtTime(.16,at+.015);g.gain.exponentialRampToValueAtTime(.0001,at+q.d);o.connect(g);g.connect(audioContext.destination);o.start(at);o.stop(at+q.d+.02)})}catch(e){$('timerState').textContent='So no disponible. Prem «Prova el so» amb el mòbil actiu.'}}
+function ensureAudio(){const C=window.AudioContext||window.webkitAudioContext;if(!C)throw new Error('Web Audio no disponible');if(!audioContext)audioContext=new C();if(audioContext.state==='suspended')audioContext.resume();return audioContext}
+async function sound(){try{const ctx=ensureAudio();if(ctx.state==='suspended')await ctx.resume();const q=soundOptions[Math.max(0,Math.min(9,Number(db.sound)||0))];q.f.forEach((freq,i)=>{const at=ctx.currentTime+i*(q.d+.035),o=ctx.createOscillator(),g=ctx.createGain();o.type=q.w;o.frequency.setValueAtTime(freq,at);g.gain.setValueAtTime(.0001,at);g.gain.exponentialRampToValueAtTime(.2,at+.015);g.gain.exponentialRampToValueAtTime(.0001,at+q.d);o.connect(g);g.connect(ctx.destination);o.start(at);o.stop(at+q.d+.02)})}catch(e){$('timerState').textContent='So no disponible. Prem «Prova el so» amb el mòbil actiu.'}}
 function requestWake(){if(navigator.wakeLock?.request)navigator.wakeLock.request('screen').then(x=>wakeLock=x).catch(()=>{});}
 function releaseWake(){if(wakeLock){wakeLock.release().catch(()=>{});wakeLock=null}}
 function currentItem(){return activeRoutine?.items?.[activeRoutineIndex]||null}
 function itemValue(x,k,d){return Math.max(k==='sets'||k==='reps'||k==='workSeconds'?1:0,Number(x?.[k])||d)}
-function normalizedItem(x){return {...x,sets:itemValue(x,'sets',3),reps:itemValue(x,'reps',12),workSeconds:itemValue(x,'workSeconds',30),restMode:x?.restMode==='manual'?'manual':'timed',restSeconds:itemValue(x,'restSeconds',30)}}
+function normalizedItem(x){return {...x,sets:itemValue(x,'sets',3),reps:itemValue(x,'reps',12),workSeconds:itemValue(x,'workSeconds',30),beepEveryReps:itemValue(x,'beepEveryReps',1),restMode:x?.restMode==='manual'?'manual':'timed',restSeconds:itemValue(x,'restSeconds',30)}}
 function renderSession(){
  const x=currentItem(),p=$('activeRoutinePanel');
  if(!activeRoutine){p.textContent='Carrega una rutina per començar.';$('exerciseLabel').textContent='Cap exercici seleccionat';$('sets').textContent='0/0';$('reps').textContent='0';$('timerStart').disabled=true;$('timerPause').disabled=true;$('nextSeries').disabled=true;return}
  const item=normalizedItem(x);$('exerciseLabel').textContent=(activeRoutineIndex+1)+'. '+item.name+' · '+item.muscle;
- $('sets').textContent=session.seriesDone+'/'+item.sets;$('reps').textContent=session.repsDone;
- p.innerHTML='<strong>'+esc(activeRoutine.name)+'</strong><br>Exercici '+(activeRoutineIndex+1)+' de '+activeRoutine.items.length+' · '+esc(item.name)+'<br>Sèrie '+Math.min(session.seriesDone+1,item.sets)+' de '+item.sets+' · '+item.workSeconds+' s de treball · '+(item.restMode==='manual'?'pausa manual':item.restSeconds+' s de pausa');
+ $('sets').textContent=session.seriesDone+'/'+item.sets;$('reps').textContent=session.repsDone;$('incompleteCount').textContent=session.incomplete;
+ const cueSeconds=item.workSeconds/item.reps*item.beepEveryReps;
+ p.innerHTML='<strong>'+esc(activeRoutine.name)+'</strong><br>Exercici '+(activeRoutineIndex+1)+' de '+activeRoutine.items.length+' · '+esc(item.name)+'<br>Sèrie '+Math.min(session.seriesAttempted+1,item.sets)+' de '+item.sets+' · '+item.workSeconds+' s · avís cada '+item.beepEveryReps+' rep. ('+cueSeconds.toFixed(1)+' s) · '+(item.restMode==='manual'?'pausa manual':item.restSeconds+' s de pausa');
  $('timerStart').disabled=session.running||session.stage==='manualRest'||session.stage==='done';
  $('timerPause').disabled=!session.running;
  $('nextSeries').disabled=session.stage!=='manualRest';
- $('timerStart').textContent=session.stage==='ready'?'Comença exercici':session.stage==='rest'?'Continua':'Inicia';
+ $('abandonSeries').disabled=!activeRoutine||session.stage!=='work';
+ $('timerStart').textContent=session.stage==='ready'?'Comença sèrie':session.stage==='rest'?'Continua':'Inicia';
 }
 function renderTimer(){
  let n=session.remaining;
  if(session.running)n=Math.max(0,session.remaining-Math.floor((Date.now()-session.startAt)/1000));
  $('clock').textContent=fmt(n);
 }
-function saveExerciseLog(){
- const x=currentItem();if(!x||!session.exerciseSets)return;
- db.logs.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),date:today(),name:x.name,muscle:x.muscle,reps:session.exerciseReps,sets:session.exerciseSets,planned:true,created:new Date().toISOString()});
- persist();
+function saveSeriesLog(completed){
+ const x=currentItem();if(!x)return;
+ const item=normalizedItem(x);
+ db.logs.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),date:today(),name:x.name,muscle:x.muscle,reps:completed?item.reps:0,sets:1,planned:true,completed,incomplete:!completed,plannedReps:item.reps,created:new Date().toISOString()});
+ persist();renderAll();
 }
 function beginStage(stage,seconds){
  session.stage=stage;session.remaining=seconds;session.running=true;session.startAt=Date.now();
+ if(stage==='work'){const x=normalizedItem(currentItem());session.nextCueAt=(x.workSeconds/x.reps)*x.beepEveryReps}
  clearInterval(timerLoop);timerLoop=setInterval(timerTick,200);requestWake();
  renderSession();renderTimer();
 }
 function completeExercise(){
- saveExerciseLog();
  activeRoutineIndex++;
  if(activeRoutineIndex>=activeRoutine.items.length){
   session.running=false;session.stage='done';session.remaining=0;clearInterval(timerLoop);releaseWake();
   $('timerState').textContent='Rutina completada!';sound();renderSession();renderTimer();renderAll();return;
  }
- session.stage='ready';session.running=false;session.remaining=0;session.seriesDone=0;session.exerciseReps=0;session.exerciseSets=0;
+ session.stage='ready';session.running=false;session.remaining=0;session.seriesDone=0;session.seriesAttempted=0;session.incomplete=0;session.exerciseReps=0;session.exerciseSets=0;session.nextCueAt=0;
  $('timerState').textContent='Exercici completat · prepara el següent';sound();renderSession();renderTimer();renderAll();
 }
-function completeSeries(){
- const x=normalizedItem(currentItem());session.seriesDone++;session.exerciseSets++;session.exerciseReps+=x.reps;session.repsDone+=x.reps;
- $('sets').textContent=session.seriesDone+'/'+x.sets;$('reps').textContent=session.repsDone;sound();
- if(session.seriesDone>=x.sets){completeExercise();return}
- if(x.restMode==='manual'){
+function afterSeries(item,wasCompleted){
+ if(session.seriesAttempted>=item.sets){completeExercise();return}
+ if(item.restMode==='manual'){
   session.stage='manualRest';session.running=false;session.remaining=0;clearInterval(timerLoop);releaseWake();
-  $('timerState').textContent='Sèrie completada · pausa lliure · prem «Següent sèrie»';renderSession();renderTimer();
+  $('timerState').textContent=(wasCompleted?'Sèrie completada':'Sèrie incompleta')+' · pausa lliure · prem «Següent sèrie»';renderSession();renderTimer();
  }else{
-  $('timerState').textContent='Sèrie completada · pausa';beginStage('rest',x.restSeconds);
+  $('timerState').textContent=(wasCompleted?'Sèrie completada':'Sèrie incompleta')+' · pausa';beginStage('rest',item.restSeconds);
  }
+}
+function completeSeries(){
+ const x=normalizedItem(currentItem());
+ session.seriesAttempted++;session.seriesDone++;session.exerciseSets++;session.exerciseReps+=x.reps;session.repsDone+=x.reps;
+ saveSeriesLog(true);sound();renderSession();afterSeries(x,true);
+}
+function abandonSeries(){
+ if(!activeRoutine||session.stage!=='work')return;
+ const x=normalizedItem(currentItem());
+ session.running=false;clearInterval(timerLoop);releaseWake();session.seriesAttempted++;session.incomplete++;
+ saveSeriesLog(false);sound();renderSession();afterSeries(x,false);
 }
 function timerTick(){
  if(!session.running)return;
  const elapsed=Math.floor((Date.now()-session.startAt)/1000);
+ if(session.stage==='work'){
+  const x=normalizedItem(currentItem()),cueEvery=x.workSeconds/x.reps*x.beepEveryReps;
+  if(elapsed>=session.nextCueAt&&elapsed<session.remaining){sound();do{session.nextCueAt+=cueEvery}while(session.nextCueAt<=elapsed)}
+ }
  if(elapsed>=session.remaining){
   session.running=false;clearInterval(timerLoop);releaseWake();
   if(session.stage==='work'){session.remaining=0;completeSeries()}
@@ -164,7 +181,7 @@ function startSession(){
   $('timerState').textContent='Pausa · '+x.name;sound();beginStage('rest',session.remaining);return;
  }
  if(session.stage==='idle'||session.stage==='ready'){
-  $('timerState').textContent='Treball · '+x.name;sound();beginStage('work',x.workSeconds);
+  ensureAudio();$('timerState').textContent='Treball · '+x.name;sound();beginStage('work',x.workSeconds);
  }
 }
 function pauseSession(){
@@ -176,12 +193,13 @@ function pauseSession(){
 function nextSeries(){
  if(session.stage==='manualRest'){session.stage='ready';$('timerState').textContent='Pausa acabada · següent sèrie';renderSession();renderTimer()}
 }
+function testSound(){try{ensureAudio();sound();$('timerState').textContent='Prova de so · si no el sents, comprova el volum i la sortida d’àudio de l’iPhone'}catch(e){$('timerState').textContent='Aquest navegador no permet reproduir àudio'}}
 function resetSession(){
  if(session.running)pauseSession();
  activeRoutine=null;activeRoutineIndex=0;session={stage:'idle',running:false,remaining:0,startAt:0,seriesDone:0,repsDone:0,exerciseReps:0,exerciseSets:0};
  clearInterval(timerLoop);releaseWake();$('routineSelect').value='';$('timerState').textContent='Preparat · carrega una rutina';renderSession();renderTimer();
 }
-$('timerStart').onclick=startSession;$('timerPause').onclick=pauseSession;$('nextSeries').onclick=nextSeries;$('timerReset').onclick=resetSession;$('testSound').onclick=()=>sound();
+$('timerStart').onclick=startSession;$('timerPause').onclick=pauseSession;$('nextSeries').onclick=nextSeries;$('abandonSeries').onclick=abandonSeries;$('timerReset').onclick=resetSession;$('testSound').onclick=testSound;
 $('soundChoice').value=String(Math.max(0,Math.min(9,Number(db.sound)||0)));$('soundChoice').onchange=()=>{db.sound=Number($('soundChoice').value);persist()};
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&session.running){timerTick();if(session.running)requestWake()}});
 function addLog(name,muscle,r,s,planned=false){if(!name.trim()||(!r&&!s))return false;db.logs.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),date:today(),name:name.trim(),muscle,reps:r,sets:s,planned,created:new Date().toISOString()});persist();renderAll();return true}
@@ -190,18 +208,18 @@ function setRoutineExercise(){renderSession()}
 function todayLogs(){return db.logs.filter(x=>x.date===today())}
 function renderGoal(){let start=new Date();let dow=(start.getDay()+6)%7;start.setDate(start.getDate()-dow);let keys=Array.from({length:7},(_,i)=>{let d=new Date(start);d.setDate(start.getDate()+i);return dateKey(d)});let days=new Set(db.logs.filter(x=>keys.includes(x.date)).map(x=>x.date)).size;$('goalNow').textContent=days;$('goalTarget').textContent=db.goal;$('goalPct').textContent=Math.min(100,Math.round(days/db.goal*100))+'%';$('goalText').textContent=days>=db.goal?'Objectiu setmanal assolit! Continua així.':'Et falten '+Math.max(0,db.goal-days)+' dies d’entrenament per assolir l’objectiu.';$('doneExercises').textContent=todayLogs().length}
 $('editGoal').onclick=()=>{let n=prompt('Quants dies vols entrenar cada setmana?',db.goal);if(n!==null){n=Math.max(1,Math.min(7,parseInt(n)||3));db.goal=n;persist();renderGoal()}};
-function renderRoutines(){let sel=$('routineSelect');sel.innerHTML='<option value="">Tria una rutina</option>'+db.routines.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('');$('routineList').innerHTML=db.routines.length?db.routines.map(r=>`<div class="listitem"><div><strong>${esc(r.name)}</strong><small>${r.items.length} exercicis · ${r.items.map(x=>esc(x.name)).join(', ')}</small></div><div class="actions"><button class="btn secondary small" data-load="${r.id}">Carrega</button><button class="btn danger small" data-delroutine="${r.id}">Elimina</button></div></div>`).join(''):'Encara no hi ha rutines creades.';document.querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>loadRoutine(b.dataset.load));document.querySelectorAll('[data-delroutine]').forEach(b=>b.onclick=()=>{if(confirm('Eliminar aquesta rutina?')){db.routines=db.routines.filter(r=>r.id!==b.dataset.delroutine);persist();renderAll()}});$('routineDraft').innerHTML=routineDraft.length?routineDraft.map((x,i)=>`${i+1}. ${esc(x.name)} · ${x.sets} × ${x.reps} · ${x.workSeconds}s treball · ${x.restMode==='manual'?'pausa manual':x.restSeconds+'s pausa'} <button class="btn danger small" data-draftdel="${i}">×</button>`).join('<br>'):'Encara no has afegit exercicis.';document.querySelectorAll('[data-draftdel]').forEach(b=>b.onclick=()=>{routineDraft.splice(+b.dataset.draftdel,1);renderRoutines()})}
-$('addRoutineExercise').onclick=()=>{let name=$('routineExercise').value.trim();if(!name){alert('Escriu el nom de l’exercici.');return}routineDraft.push({name,muscle:$('routineMuscle').value,sets:Math.max(1,+$('routineSets').value||3),reps:Math.max(1,+$('routineReps').value||12),workSeconds:Math.max(1,+$('routineWork').value||30),restMode:$('routineRestMode').value,restSeconds:Math.max(0,+$('routineRest').value||0)});$('routineExercise').value='';renderRoutines()};
+function renderRoutines(){let sel=$('routineSelect');sel.innerHTML='<option value="">Tria una rutina</option>'+db.routines.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('');$('routineList').innerHTML=db.routines.length?db.routines.map(r=>`<div class="listitem"><div><strong>${esc(r.name)}</strong><small>${r.items.length} exercicis · ${r.items.map(x=>esc(x.name)).join(', ')}</small></div><div class="actions"><button class="btn secondary small" data-load="${r.id}">Carrega</button><button class="btn danger small" data-delroutine="${r.id}">Elimina</button></div></div>`).join(''):'Encara no hi ha rutines creades.';document.querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>loadRoutine(b.dataset.load));document.querySelectorAll('[data-delroutine]').forEach(b=>b.onclick=()=>{if(confirm('Eliminar aquesta rutina?')){db.routines=db.routines.filter(r=>r.id!==b.dataset.delroutine);persist();renderAll()}});$('routineDraft').innerHTML=routineDraft.length?routineDraft.map((x,i)=>`${i+1}. ${esc(x.name)} · ${x.sets} × ${x.reps} · ${x.workSeconds}s treball · avís cada ${x.beepEveryReps||1} rep. · ${x.restMode==='manual'?'pausa manual':x.restSeconds+'s pausa'} <button class="btn danger small" data-draftdel="${i}">×</button>`).join('<br>'):'Encara no has afegit exercicis.';document.querySelectorAll('[data-draftdel]').forEach(b=>b.onclick=()=>{routineDraft.splice(+b.dataset.draftdel,1);renderRoutines()})}
+$('addRoutineExercise').onclick=()=>{let name=$('routineExercise').value.trim();if(!name){alert('Escriu el nom de l’exercici.');return}routineDraft.push({name,muscle:$('routineMuscle').value,sets:Math.max(1,+$('routineSets').value||3),reps:Math.max(1,+$('routineReps').value||12),workSeconds:Math.max(1,+$('routineWork').value||30),beepEveryReps:Math.max(1,+$('routineBeepEvery').value||1),restMode:$('routineRestMode').value,restSeconds:Math.max(0,+$('routineRest').value||0)});$('routineExercise').value='';renderRoutines()};
 $('saveRoutine').onclick=()=>{let name=$('routineName').value.trim();if(!name||!routineDraft.length){alert('Indica un nom i afegeix almenys un exercici.');return}db.routines.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),name,items:routineDraft.slice()});routineDraft=[];$('routineName').value='';persist();renderAll()};
 function loadRoutine(id){let r=db.routines.find(x=>x.id===id);if(!r)return;resetSession();activeRoutine=r;activeRoutineIndex=0;session.stage='ready';$('routineSelect').value=id;renderSession();renderTimer();$('timerState').textContent='Rutina carregada · prem Inicia';}
 $('loadRoutine').onclick=()=>loadRoutine($('routineSelect').value);
 function renderCalendar(){let y=monthDate.getFullYear(),m=monthDate.getMonth(),first=new Date(y,m,1),days=new Date(y,m+1,0).getDate(),offset=(first.getDay()+6)%7;$('monthTitle').textContent=monthDate.toLocaleDateString('ca-ES',{month:'long',year:'numeric'});let h=['Dl','Dt','Dc','Dj','Dv','Ds','Dg'].map(x=>`<div class="calhead">${x}</div>`).join('');for(let i=0;i<offset;i++)h+='<div></div>';for(let d=1;d<=days;d++){let date=new Date(y,m,d),key=dateKey(date),logs=db.logs.filter(x=>x.date===key),cls='calday'+(logs.length?' active':'')+(key===today()?' today':'');h+=`<button class="${cls}" data-day="${key}">${d}${logs.length?'<span class="dot">● '+logs.length+'</span>':''}</button>`}$('monthGrid').innerHTML=h;document.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>showDay(b.dataset.day));let now=new Date(),wk=[];for(let i=6;i>=0;i--){let d=new Date(now);d.setDate(now.getDate()-i);let n=db.logs.filter(x=>x.date===dateKey(d)).length;wk.push(`<div class="weekday ${n?'done':''}"><b>${d.getDate()}</b>${['Dl','Dt','Dc','Dj','Dv','Ds','Dg'][(d.getDay()+6)%7]}${n?' ✓':''}</div>`)}$('weekGrid').innerHTML=wk.join('');let count=new Set(db.logs.filter(x=>{let d=new Date(x.date+'T12:00:00');return d>=new Date(now.getFullYear(),now.getMonth(),now.getDate()-6)}).map(x=>x.date)).size;$('weekText').textContent=count+' dies amb entrenament durant els últims 7 dies.'}
-function showDay(key){let a=db.logs.filter(x=>x.date===key);$('selectedDay').innerHTML='<strong>'+key.split('-').reverse().join('/')+'</strong><br>'+(a.length?a.map(x=>esc(x.name)+' · '+esc(x.muscle)+' · '+x.sets+' sèries · '+x.reps+' repeticions').join('<br>'):'Cap entrenament registrat aquest dia.')}
+function showDay(key){let a=db.logs.filter(x=>x.date===key);$('selectedDay').innerHTML='<strong>'+key.split('-').reverse().join('/')+'</strong><br>'+(a.length?a.map(x=>esc(x.name)+' · '+esc(x.muscle)+' · '+(x.incomplete?'sèrie incompleta':x.sets+' sèrie · '+x.reps+' repeticions')).join('<br>'):'Cap entrenament registrat aquest dia.')}
 $('prevMonth').onclick=()=>{monthDate.setMonth(monthDate.getMonth()-1);renderCalendar()};$('nextMonth').onclick=()=>{monthDate.setMonth(monthDate.getMonth()+1);renderCalendar()};
-function renderHistory(){let names=[...new Set(db.logs.map(x=>x.name))].sort(),filter=$('historyFilter').value,muscle=$('historyMuscle').value;$('historyFilter').innerHTML='<option value="">Tots els exercicis</option>'+names.map(n=>`<option>${esc(n)}</option>`).join('');$('historyFilter').value=filter;$('historyMuscle').value=muscle;let list=db.logs.filter(x=>(!filter||x.name===filter)&&(!muscle||x.muscle===muscle)).slice().reverse();$('historyList').innerHTML=list.length?list.map(x=>`<div class="listitem"><div><strong>${esc(x.name)} <span class="pill">${esc(x.muscle)}</span></strong><small>${x.date.split('-').reverse().join('/')} · ${x.sets} sèries · ${x.reps} repeticions</small></div><button class="btn danger small" data-dellog="${x.id}">Elimina</button></div>`).join(''):'<p class="muted">No hi ha registres per mostrar.</p>';document.querySelectorAll('[data-dellog]').forEach(b=>b.onclick=()=>{if(confirm('Eliminar aquest registre?')){db.logs=db.logs.filter(x=>x.id!==b.dataset.dellog);persist();renderAll()}})}
+function renderHistory(){let names=[...new Set(db.logs.map(x=>x.name))].sort(),filter=$('historyFilter').value,muscle=$('historyMuscle').value;$('historyFilter').innerHTML='<option value="">Tots els exercicis</option>'+names.map(n=>`<option>${esc(n)}</option>`).join('');$('historyFilter').value=filter;$('historyMuscle').value=muscle;let list=db.logs.filter(x=>(!filter||x.name===filter)&&(!muscle||x.muscle===muscle)).slice().reverse();$('historyList').innerHTML=list.length?list.map(x=>`<div class="listitem"><div><strong>${esc(x.name)} <span class="pill">${esc(x.muscle)}</span></strong><small>${x.date.split('-').reverse().join('/')} · ${x.incomplete?'SÈRIE INCOMPLETA':x.sets+' sèrie completada · '+x.reps+' repeticions'}</small></div><button class="btn danger small" data-dellog="${x.id}">Elimina</button></div>`).join(''):'<p class="muted">No hi ha registres per mostrar.</p>';document.querySelectorAll('[data-dellog]').forEach(b=>b.onclick=()=>{if(confirm('Eliminar aquest registre?')){db.logs=db.logs.filter(x=>x.id!==b.dataset.dellog);persist();renderAll()}})}
 $('historyFilter').onchange=renderHistory;$('historyMuscle').onchange=renderHistory;
 function drawChart(){let c=$('chart'),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);let name=$('chartExercise').value;let a=db.logs.filter(x=>!name||x.name===name).slice(-12);ctx.strokeStyle='#354960';ctx.fillStyle='#a9b8ca';ctx.lineWidth=1;for(let i=0;i<5;i++){let y=20+i*(h-50)/4;ctx.beginPath();ctx.moveTo(42,y);ctx.lineTo(w-12,y);ctx.stroke()}if(!a.length){ctx.fillText('Encara no hi ha dades per dibuixar',55,120);return}let max=Math.max(1,...a.map(x=>x.reps)),step=(w-65)/Math.max(1,a.length-1);ctx.strokeStyle='#65ddb1';ctx.lineWidth=3;ctx.beginPath();a.forEach((x,i)=>{let px=45+i*step,py=h-30-(x.reps/max)*(h-65);if(!i)ctx.moveTo(px,py);else ctx.lineTo(px,py)});ctx.stroke();a.forEach((x,i)=>{let px=45+i*step,py=h-30-(x.reps/max)*(h-65);ctx.fillStyle='#65ddb1';ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#a9b8ca';ctx.font='11px sans-serif';ctx.fillText(x.reps,px-7,py-10)})}
-function renderProgress(){let names=[...new Set(db.logs.map(x=>x.name))].sort(),v=$('chartExercise').value;$('chartExercise').innerHTML='<option value="">Tots els exercicis</option>'+names.map(n=>`<option>${esc(n)}</option>`).join('');$('chartExercise').value=v;drawChart();let from=new Date();from.setDate(from.getDate()-29);let a=db.logs.filter(x=>new Date(x.date+'T12:00:00')>=from);$('mDays').textContent=new Set(a.map(x=>x.date)).size;$('mSets').textContent=a.reduce((s,x)=>s+x.sets,0);$('mReps').textContent=a.reduce((s,x)=>s+x.reps,0)}
+function renderProgress(){let names=[...new Set(db.logs.map(x=>x.name))].sort(),v=$('chartExercise').value;$('chartExercise').innerHTML='<option value="">Tots els exercicis</option>'+names.map(n=>`<option>${esc(n)}</option>`).join('');$('chartExercise').value=v;drawChart();let from=new Date();from.setDate(from.getDate()-29);let a=db.logs.filter(x=>new Date(x.date+'T12:00:00')>=from);$('mDays').textContent=new Set(a.map(x=>x.date)).size;$('mSets').textContent=a.filter(x=>x.completed!==false).reduce((s,x)=>s+x.sets,0);$('mReps').textContent=a.filter(x=>x.completed!==false).reduce((s,x)=>s+x.reps,0);$('mIncomplete').textContent=a.filter(x=>x.incomplete===true).length}
 $('chartExercise').onchange=drawChart;
 function renderAll(){renderRoutines();renderGoal();renderCalendar();renderHistory();renderProgress();$('doneExercises').textContent=todayLogs().length}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===b.dataset.page));renderAll()});
@@ -209,7 +227,7 @@ function download(blob,name){let url=URL.createObjectURL(blob),a=document.create
 $('backup').onclick=()=>download(new Blob([JSON.stringify({app:'ENTRENA',version:2,exported:new Date().toISOString(),data:db},null,2)],{type:'application/json'}),'entrena-copia-'+today()+'.json');
 $('restoreBtn').onclick=()=>$('restoreFile').click();
 $('restoreFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let obj=JSON.parse(await f.text()),d=obj.data||obj;if(!Array.isArray(d.logs)||!Array.isArray(d.routines))throw Error('format');if(!confirm('La importació substituirà les dades actuals. Continua?'))return;db={logs:d.logs,routines:d.routines,goal:Math.max(1,Math.min(7,+d.goal||3))};persist();renderAll();alert('Còpia restaurada correctament.')}catch(err){alert('No s’ha pogut importar. Comprova que sigui una còpia ENTRENA vàlida.')}e.target.value=''};
-$('excel').onclick=()=>{const escXml=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');const sheet=(name,rows)=>`<Worksheet ss:Name="${name}"><Table>${rows.map(row=>'<Row>'+row.map(v=>`<Cell><Data ss:Type="${typeof v==='number'?'Number':'String'}">${escXml(v)}</Data></Cell>`).join('')+'</Row>').join('')}</Table></Worksheet>`;let hist=[['Data','Exercici','Grup muscular','Sèries','Repeticions'],...db.logs.map(x=>[x.date,x.name,x.muscle,x.sets,x.reps])],ruts=[['Rutina','Exercici','Grup muscular','Sèries','Repeticions per sèrie','Temps sèrie (s)','Tipus pausa','Pausa (s)'],...db.routines.flatMap(r=>r.items.map(x=>[r.name,x.name,x.muscle,x.sets,x.reps,x.workSeconds||30,x.restMode||'timed',x.restSeconds??30]))],goals=[['Objectiu','Dies per setmana'],['Objectiu setmanal',db.goal]];let xml=`<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">${sheet('Historial',hist)}${sheet('Rutines',ruts)}${sheet('Objectius',goals)}</Workbook>`;download(new Blob([xml],{type:'application/vnd.ms-excel'}),'entrena-'+today()+'.xls')};
+$('excel').onclick=()=>{const escXml=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');const sheet=(name,rows)=>`<Worksheet ss:Name="${name}"><Table>${rows.map(row=>'<Row>'+row.map(v=>`<Cell><Data ss:Type="${typeof v==='number'?'Number':'String'}">${escXml(v)}</Data></Cell>`).join('')+'</Row>').join('')}</Table></Worksheet>`;let hist=[['Data','Exercici','Grup muscular','Sèries','Repeticions'],...db.logs.map(x=>[x.date,x.name,x.muscle,x.sets,x.reps])],ruts=[['Rutina','Exercici','Grup muscular','Sèries','Repeticions per sèrie','Temps sèrie (s)','Avís cada X repeticions','Tipus pausa','Pausa (s)'],...db.routines.flatMap(r=>r.items.map(x=>[r.name,x.name,x.muscle,x.sets,x.reps,x.workSeconds||30,x.beepEveryReps||1,x.restMode||'timed',x.restSeconds??30]))],goals=[['Objectiu','Dies per setmana'],['Objectiu setmanal',db.goal]];let xml=`<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">${sheet('Historial',hist)}${sheet('Rutines',ruts)}${sheet('Objectius',goals)}</Workbook>`;download(new Blob([xml],{type:'application/vnd.ms-excel'}),'entrena-'+today()+'.xls')};
 $('deleteAll').onclick=()=>{if(confirm('S’esborraran permanentment totes les rutines i l’historial d’aquest navegador. Has fet una còpia de seguretat?')){db=fresh();persist();renderAll()}};
 if(typeof db.sound!=='number')db.sound=0;persist();renderAll();renderSession();renderTimer();
 if('serviceWorker'in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('./sw.js').catch(()=>{});
