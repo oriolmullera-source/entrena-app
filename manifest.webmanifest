@@ -1,0 +1,10 @@
+{
+  "name": "ENTRENA - Registre d'entrenaments",
+  "short_name": "ENTRENA",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0e1725",
+  "theme_color": "#101827",
+  "lang": "ca",
+  "description": "Rutines, temporitzadors i registre d'exercicis"
+}

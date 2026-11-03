@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101827"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<title>ENTRENA · El teu entrenament</title>
+<style>
+:root{color-scheme:dark;--bg:#0e1725;--panel:#192638;--panel2:#22344a;--line:#354960;--text:#f3f7fc;--muted:#a9b8ca;--green:#65ddb1;--red:#ff8585;--yellow:#f5ca71}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#0e1725,#14253a);color:var(--text);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 13px calc(24px + env(safe-area-inset-bottom))}
+main{max-width:780px;margin:auto}.head{padding:19px 3px 12px}.head h1{margin:0;font-size:27px}.head p{margin:4px 0;color:var(--muted);font-size:13px}
+nav{display:flex;gap:6px;overflow:auto;padding:4px 0 14px;position:sticky;top:0;background:#101b2beF;z-index:4}nav button{white-space:nowrap;flex:1;min-width:max-content;background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:11px;padding:11px 13px;font-weight:700}nav button.active{background:var(--green);color:#10251d;border-color:var(--green)}
+.page{display:none}.page.active{display:block}.card{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:15px;margin-bottom:12px}.card h2{font-size:17px;margin:0 0 12px}.card h3{font-size:14px;margin:13px 0 8px}.muted{color:var(--muted);font-size:12px;line-height:1.45}
+label{display:block;color:var(--muted);font-size:12px;margin:0 0 5px}input,select,textarea{width:100%;background:#101b2b;border:1px solid var(--line);border-radius:10px;color:var(--text);padding:12px;font-size:15px;min-width:0}textarea{min-height:70px;resize:vertical}.row{display:flex;gap:9px;align-items:end}.row>*{flex:1;min-width:0}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.btn{border:0;border-radius:11px;padding:12px 13px;min-height:44px;background:var(--green);color:#10251d;font-weight:800;font-size:14px}.btn.secondary{background:var(--panel2);border:1px solid var(--line);color:var(--text)}.btn.danger{background:#512d39;color:#ffe8eb}.btn.small{padding:8px 10px;min-height:34px;font-size:12px}.btn:disabled{opacity:.45}
+.timer{font-size:56px;text-align:center;font-weight:850;font-variant-numeric:tabular-nums;padding:7px 0}.center{text-align:center}.timerbuttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stat{background:#101b2b;border-radius:12px;padding:12px 7px;text-align:center}.stat strong{font-size:25px;display:block}.stat span{font-size:11px;color:var(--muted)}
+.bigrep{width:100%;height:90px;font-size:22px;margin:10px 0}.listitem{padding:11px 0;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:9px}.listitem:first-child{border-top:0}.listitem strong{display:block}.listitem small{color:var(--muted)}.actions{display:flex;gap:6px;flex-wrap:wrap}.pill{display:inline-block;border-radius:99px;background:#254b43;color:#bfffe7;padding:4px 8px;font-size:11px}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.calhead,.calday{padding:7px 1px;text-align:center;border-radius:9px;font-size:12px}.calhead{color:var(--muted)}.calday{background:#101b2b;border:1px solid transparent;min-height:48px}.calday.active{background:#1e5948;border-color:#398b70;color:#e2fff4}.calday.today{border-color:var(--yellow)}.calday .dot{display:block;color:var(--green);font-size:10px}
+canvas{width:100%;height:210px;display:block;background:#101b2b;border-radius:12px}
+.weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.weekday{background:#101b2b;border-radius:9px;text-align:center;padding:8px 1px;color:var(--muted);font-size:11px}.weekday b{display:block;color:var(--text);font-size:16px;margin-bottom:3px}.weekday.done{background:#1e5948;color:#d9fff0}
+hr{border:0;border-top:1px solid var(--line);margin:12px 0}.hidden{display:none!important}.foot{text-align:center;color:var(--muted);font-size:11px;padding:10px}
+@media(min-width:600px){body{padding-left:24px;padding-right:24px}.timer{font-size:68px}}
+</style>
+</head>
+<body><main>
+<header class="head"><h1>🏋️ ENTRENA</h1><p>Rutines, temporitzadors, seguiment i evolució. Les dades són teves.</p></header>
+<nav id="nav">
+<button class="active" data-page="home">Avui</button><button data-page="routines">Rutines</button><button data-page="calendar">Calendari</button><button data-page="history">Historial</button><button data-page="progress">Evolució</button><button data-page="data">Dades</button>
+</nav>
+
+<section id="home" class="page active">
+ <div class="card"><h2>Entrenament actual</h2>
+  <div class="row"><div style="flex:2"><label>Rutina</label><select id="routineSelect"><option value="">Entrenament lliure</option></select></div><button class="btn secondary" id="loadRoutine">Carrega</button></div>
+  <div class="row" style="margin-top:9px"><div><label>Grup muscular</label><select id="muscle"><option>Pit</option><option>Esquena</option><option>Cames</option><option>Braços</option><option>Espatlles</option><option>Abdominals</option><option>Cardio</option><option>Cos sencer</option><option>Altres</option></select></div><div><label>Exercici</label><input id="exercise" value="Flexions" placeholder="Nom exercici"></div></div>
+  <div class="grid3" style="margin-top:12px"><div class="stat"><strong id="reps">0</strong><span>Repeticions</span></div><div class="stat"><strong id="sets">0</strong><span>Sèries</span></div><div class="stat"><strong id="doneExercises">0</strong><span>Exercicis avui</span></div></div>
+  <button class="btn bigrep" id="addRep">+1 REPETICIÓ</button><div class="center muted" id="pace">Ritme: —</div>
+  <div class="grid2" style="margin-top:10px"><button class="btn secondary" id="addSet">+ Sèrie completada</button><button class="btn secondary" id="finishExercise">Desa exercici</button></div>
+  <p class="muted">Desa cada exercici quan l'acabis. Les repeticions i sèries quedaran associades al seu nom i grup muscular.</p>
+ </div>
+ <div class="card"><h2>Temporitzador d'intervals</h2>
+  <div class="grid2"><div><label>Avís sonor cada (segons)</label><input id="interval" type="number" min="1" max="3600" value="30"></div><div><label>Durada total (segons, 0 = lliure)</label><input id="duration" type="number" min="0" value="0"></div></div>
+  <div class="timer" id="clock">00:00</div><div class="center muted" id="timerState">Preparat · prem Inicia</div>
+  <div class="timerbuttons" style="margin-top:10px"><button class="btn" id="timerStart">Inicia</button><button class="btn secondary" id="timerPause">Pausa</button><button class="btn secondary" id="timerReset">Reinicia</button><button class="btn secondary" id="testSound">Prova el so</button></div>
+  <p class="muted">Mantén la pantalla activa durant l'entrenament. Si bloqueges el mòbil o canvies d'app, iOS pot suspendre el navegador: el temps es recalcula en tornar, però no es pot garantir el so en segon pla.</p>
+ </div>
+ <div class="card"><h2>Objectiu d'aquesta setmana</h2><div class="grid3"><div class="stat"><strong id="goalNow">0</strong><span>Dies actius</span></div><div class="stat"><strong id="goalTarget">3</strong><span>Objectiu</span></div><div class="stat"><strong id="goalPct">0%</strong><span>Completat</span></div></div><p class="muted" id="goalText"></p><button class="btn secondary small" id="editGoal">Canvia objectiu</button></div>
+</section>
+
+<section id="routines" class="page">
+ <div class="card"><h2>Crear rutina personalitzada</h2>
+  <label>Nom de la rutina</label><input id="routineName" placeholder="Ex. Pit i tríceps">
+  <div class="row" style="margin-top:9px"><div><label>Grup muscular</label><select id="routineMuscle"><option>Pit</option><option>Esquena</option><option>Cames</option><option>Braços</option><option>Espatlles</option><option>Abdominals</option><option>Cardio</option><option>Cos sencer</option><option>Altres</option></select></div><div><label>Exercici</label><input id="routineExercise" placeholder="Ex. Press banca"></div></div>
+  <div class="grid2" style="margin-top:9px"><div><label>Sèries previstes</label><input id="routineSets" type="number" min="1" value="3"></div><div><label>Repeticions previstes</label><input id="routineReps" type="number" min="1" value="12"></div></div>
+  <button class="btn" id="addRoutineExercise" style="width:100%;margin-top:10px">Afegeix exercici a la rutina</button><div id="routineDraft" class="muted" style="margin-top:9px">Encara no has afegit exercicis.</div>
+  <button class="btn" id="saveRoutine" style="width:100%;margin-top:10px">Desa rutina</button>
+ </div><div class="card"><h2>Les meves rutines</h2><div id="routineList" class="muted">Encara no hi ha rutines creades.</div></div>
+</section>
+
+<section id="calendar" class="page">
+ <div class="card"><div class="row" style="align-items:center"><button class="btn secondary small" id="prevMonth">‹</button><h2 id="monthTitle" style="flex:1;text-align:center;margin:0"></h2><button class="btn secondary small" id="nextMonth">›</button></div><div class="calendar" id="monthGrid" style="margin-top:13px"></div><hr><div id="selectedDay" class="muted">Selecciona un dia per veure l'entrenament.</div></div>
+ <div class="card"><h2>Resum dels últims 7 dies</h2><div class="weekdays" id="weekGrid"></div><p class="muted" id="weekText"></p></div>
+</section>
+
+<section id="history" class="page">
+ <div class="card"><h2>Historial per exercici</h2><div class="row"><div><label>Filtra per exercici</label><select id="historyFilter"><option value="">Tots els exercicis</option></select></div><div><label>Grup muscular</label><select id="historyMuscle"><option value="">Tots</option><option>Pit</option><option>Esquena</option><option>Cames</option><option>Braços</option><option>Espatlles</option><option>Abdominals</option><option>Cardio</option><option>Cos sencer</option><option>Altres</option></select></div></div><div id="historyList" style="margin-top:10px"></div></div>
+</section>
+
+<section id="progress" class="page">
+ <div class="card"><h2>Evolució de les repeticions</h2><label>Exercici</label><select id="chartExercise"><option value="">Tots els exercicis</option></select><canvas id="chart" width="700" height="260"></canvas><p class="muted">Repeticions registrades per sessió (últims 12 registres).</p></div>
+ <div class="card"><h2>Resum dels últims 30 dies</h2><div class="grid3"><div class="stat"><strong id="mDays">0</strong><span>Dies actius</span></div><div class="stat"><strong id="mSets">0</strong><span>Sèries</span></div><div class="stat"><strong id="mReps">0</strong><span>Repeticions</span></div></div></div>
+</section>
+
+<section id="data" class="page">
+ <div class="card"><h2>Còpia de seguretat</h2><p class="muted">Exporta un fitxer de còpia de seguretat amb rutines, historial i objectius. Desa'l a Fitxers, iCloud o Google Drive. Per recuperar-lo en un altre mòbil, importa aquest mateix fitxer.</p><div class="grid2"><button class="btn" id="backup">Exporta còpia JSON</button><button class="btn secondary" id="restoreBtn">Importa còpia JSON</button></div><input type="file" id="restoreFile" accept="application/json,.json" class="hidden"></div>
+ <div class="card"><h2>Exportar a Excel</h2><p class="muted">Genera un llibre Excel compatible (.xls) amb fulls separats per a historial, rutines i objectius. També el pots obrir amb Numbers o LibreOffice.</p><button class="btn" id="excel" style="width:100%">Exporta dades a Excel</button></div>
+ <div class="card"><h2>Emmagatzematge</h2><div id="storageInfo" class="muted"></div><hr><button class="btn danger" id="deleteAll" style="width:100%">Esborra totes les dades</button></div>
+</section>
+<div class="foot">ENTRENA · Les dades es guarden localment en aquest navegador. Fes còpies de seguretat periòdiques.</div>
+</main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id),KEY='entrena_v2_data';
+const fresh=()=>({logs:[],routines:[],goal:3});
+let db;try{db=JSON.parse(localStorage.getItem(KEY)||'null')||fresh()}catch(e){db=fresh()}
+const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(db));$('storageInfo').textContent=db.logs.length+' registres · '+db.routines.length+' rutines · desat en aquest dispositiu'}catch(e){alert('No s’han pogut desar les dades. Exporta una còpia de seguretat.')}};
+const pad=n=>String(n).padStart(2,'0'),dateKey=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()),today=()=>dateKey(new Date());
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=s=>pad(Math.floor(s/60))+':'+pad(s%60);
+let reps=0,sets=0,repMarks=[],routineDraft=[],monthDate=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+let timerState={running:false,elapsed:0,startAt:0,deadline:0,nextBeep:0,interval:30,duration:0},timerLoop=null,wakeLock=null;
+function sound(){try{let C=window.AudioContext||window.webkitAudioContext;if(!C)throw 0;let c=new C(),o=c.createOscillator(),g=c.createGain();o.frequency.value=880;g.gain.value=.12;o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+.18);setTimeout(()=>c.close(),350)}catch(e){$('timerState').textContent='No s’ha pogut reproduir el so. Toca la pantalla i torna-ho a provar.'}}
+function requestWake(){if(navigator.wakeLock?.request)navigator.wakeLock.request('screen').then(x=>wakeLock=x).catch(()=>{});}
+function releaseWake(){if(wakeLock){wakeLock.release().catch(()=>{});wakeLock=null}}
+function renderTimer(){let s=timerState.elapsed;if(timerState.running)s=Math.floor((Date.now()-timerState.startAt)/1000)+timerState.elapsed;$('clock').textContent=fmt(Math.max(0,s));}
+function timerTick(){if(!timerState.running)return;let elapsed=timerState.elapsed+Math.floor((Date.now()-timerState.startAt)/1000);
+ if(timerState.duration>0&&elapsed>=timerState.duration){timerState.elapsed=timerState.duration;timerState.running=false;clearInterval(timerLoop);releaseWake();sound();$('timerState').textContent='Temps completat!';renderTimer();return}
+ if(elapsed>=timerState.nextBeep){sound();timerState.nextBeep=elapsed+timerState.interval}
+ renderTimer();
+}
+function startTimer(){if(timerState.running)return;let interval=Math.max(1,Math.min(3600,Number($('interval').value)||30)),duration=Math.max(0,Number($('duration').value)||0);timerState.interval=interval;timerState.duration=duration;timerState.running=true;timerState.startAt=Date.now();timerState.nextBeep=timerState.elapsed+interval;requestWake();sound();$('timerState').textContent='En marxa · avís cada '+interval+' s';clearInterval(timerLoop);timerLoop=setInterval(timerTick,250);renderTimer()}
+function pauseTimer(){if(timerState.running){timerState.elapsed+=Math.floor((Date.now()-timerState.startAt)/1000);timerState.running=false}clearInterval(timerLoop);releaseWake();renderTimer();if($('timerState').textContent.startsWith('En marxa'))$('timerState').textContent='En pausa'}
+function resetTimer(){pauseTimer();timerState.elapsed=0;timerState.nextBeep=timerState.interval;$('timerState').textContent='Preparat · prem Inicia';renderTimer()}
+$('timerStart').onclick=startTimer;$('timerPause').onclick=pauseTimer;$('timerReset').onclick=resetTimer;$('testSound').onclick=sound;
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&timerState.running){timerTick();if(timerState.running)requestWake();}});
+function updateCounters(){ $('reps').textContent=reps;$('sets').textContent=sets;let pace=repMarks.length>1?(repMarks.length-1)/((repMarks.at(-1)-repMarks[0])/60000):0;$('pace').textContent=pace>0?'Ritme aproximat: '+pace.toFixed(1)+' repeticions/minut':'Ritme: —'}
+$('addRep').onclick=()=>{reps++;repMarks.push(Date.now());updateCounters()};
+$('addSet').onclick=()=>{sets++;updateCounters()};
+function addLog(name,muscle,r,s,planned=false){if(!name.trim()||(!r&&!s)){alert('Afegeix alguna repetició o sèrie abans de desar.');return}db.logs.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),date:today(),name:name.trim(),muscle,reps:r,sets:s,planned,created:new Date().toISOString()});persist();reps=0;sets=0;repMarks=[];updateCounters();renderAll()}
+$('finishExercise').onclick=()=>{addLog($('exercise').value,$('muscle').value,reps,sets);};
+function todayLogs(){return db.logs.filter(x=>x.date===today())}
+function renderGoal(){let start=new Date();let dow=(start.getDay()+6)%7;start.setDate(start.getDate()-dow);let keys=Array.from({length:7},(_,i)=>{let d=new Date(start);d.setDate(start.getDate()+i);return dateKey(d)});let days=new Set(db.logs.filter(x=>keys.includes(x.date)).map(x=>x.date)).size;$('goalNow').textContent=days;$('goalTarget').textContent=db.goal;$('goalPct').textContent=Math.min(100,Math.round(days/db.goal*100))+'%';$('goalText').textContent=days>=db.goal?'Objectiu setmanal assolit! Continua així.':'Et falten '+Math.max(0,db.goal-days)+' dies d’entrenament per assolir l’objectiu.';$('doneExercises').textContent=todayLogs().length}
+$('editGoal').onclick=()=>{let n=prompt('Quants dies vols entrenar cada setmana?',db.goal);if(n!==null){n=Math.max(1,Math.min(7,parseInt(n)||3));db.goal=n;persist();renderGoal()}};
+function renderRoutines(){let sel=$('routineSelect');sel.innerHTML='<option value="">Entrenament lliure</option>'+db.routines.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('');$('routineList').innerHTML=db.routines.length?db.routines.map(r=>`<div class="listitem"><div><strong>${esc(r.name)}</strong><small>${r.items.length} exercicis · ${r.items.map(x=>esc(x.name)).join(', ')}</small></div><div class="actions"><button class="btn secondary small" data-load="${r.id}">Carrega</button><button class="btn danger small" data-delroutine="${r.id}">Elimina</button></div></div>`).join(''):'Encara no hi ha rutines creades.';document.querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>loadRoutine(b.dataset.load));document.querySelectorAll('[data-delroutine]').forEach(b=>b.onclick=()=>{if(confirm('Eliminar aquesta rutina?')){db.routines=db.routines.filter(r=>r.id!==b.dataset.delroutine);persist();renderAll()}});$('routineDraft').innerHTML=routineDraft.length?routineDraft.map((x,i)=>`${i+1}. ${esc(x.name)} · ${x.sets} × ${x.reps} <button class="btn danger small" data-draftdel="${i}">×</button>`).join('<br>'):'Encara no has afegit exercicis.';document.querySelectorAll('[data-draftdel]').forEach(b=>b.onclick=()=>{routineDraft.splice(+b.dataset.draftdel,1);renderRoutines()})}
+$('addRoutineExercise').onclick=()=>{let name=$('routineExercise').value.trim();if(!name){alert('Escriu el nom de l’exercici.');return}routineDraft.push({name,muscle:$('routineMuscle').value,sets:Math.max(1,+$('routineSets').value||3),reps:Math.max(1,+$('routineReps').value||12)});$('routineExercise').value='';renderRoutines()};
+$('saveRoutine').onclick=()=>{let name=$('routineName').value.trim();if(!name||!routineDraft.length){alert('Indica un nom i afegeix almenys un exercici.');return}db.routines.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),name,items:routineDraft.slice()});routineDraft=[];$('routineName').value='';persist();renderAll()};
+function loadRoutine(id){let r=db.routines.find(x=>x.id===id);if(!r)return;let first=r.items[0];if(first){$('exercise').value=first.name;$('muscle').value=first.muscle;$('routineSelect').value=id}alert('Rutina carregada. Selecciona cada exercici al camp Exercici i desa’l en acabar. Els objectius de sèries i repeticions són orientatius: '+r.items.map(x=>x.name+' ('+x.sets+'×'+x.reps+')').join(', '))}
+$('loadRoutine').onclick=()=>loadRoutine($('routineSelect').value);
+function renderCalendar(){let y=monthDate.getFullYear(),m=monthDate.getMonth(),first=new Date(y,m,1),days=new Date(y,m+1,0).getDate(),offset=(first.getDay()+6)%7;$('monthTitle').textContent=monthDate.toLocaleDateString('ca-ES',{month:'long',year:'numeric'});let h=['Dl','Dt','Dc','Dj','Dv','Ds','Dg'].map(x=>`<div class="calhead">${x}</div>`).join('');for(let i=0;i<offset;i++)h+='<div></div>';for(let d=1;d<=days;d++){let date=new Date(y,m,d),key=dateKey(date),logs=db.logs.filter(x=>x.date===key),cls='calday'+(logs.length?' active':'')+(key===today()?' today':'');h+=`<button class="${cls}" data-day="${key}">${d}${logs.length?'<span class="dot">● '+logs.length+'</span>':''}</button>`}$('monthGrid').innerHTML=h;document.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>showDay(b.dataset.day));let now=new Date(),wk=[];for(let i=6;i>=0;i--){let d=new Date(now);d.setDate(now.getDate()-i);let n=db.logs.filter(x=>x.date===dateKey(d)).length;wk.push(`<div class="weekday ${n?'done':''}"><b>${d.getDate()}</b>${['Dl','Dt','Dc','Dj','Dv','Ds','Dg'][(d.getDay()+6)%7]}${n?' ✓':''}</div>`)}$('weekGrid').innerHTML=wk.join('');let count=new Set(db.logs.filter(x=>{let d=new Date(x.date+'T12:00:00');return d>=new Date(now.getFullYear(),now.getMonth(),now.getDate()-6)}).map(x=>x.date)).size;$('weekText').textContent=count+' dies amb entrenament durant els últims 7 dies.'}
+function showDay(key){let a=db.logs.filter(x=>x.date===key);$('selectedDay').innerHTML='<strong>'+key.split('-').reverse().join('/')+'</strong><br>'+(a.length?a.map(x=>esc(x.name)+' · '+esc(x.muscle)+' · '+x.sets+' sèries · '+x.reps+' repeticions').join('<br>'):'Cap entrenament registrat aquest dia.')}
+$('prevMonth').onclick=()=>{monthDate.setMonth(monthDate.getMonth()-1);renderCalendar()};$('nextMonth').onclick=()=>{monthDate.setMonth(monthDate.getMonth()+1);renderCalendar()};
+function renderHistory(){let names=[...new Set(db.logs.map(x=>x.name))].sort(),filter=$('historyFilter').value,muscle=$('historyMuscle').value;$('historyFilter').innerHTML='<option value="">Tots els exercicis</option>'+names.map(n=>`<option>${esc(n)}</option>`).join('');$('historyFilter').value=filter;$('historyMuscle').value=muscle;let list=db.logs.filter(x=>(!filter||x.name===filter)&&(!muscle||x.muscle===muscle)).slice().reverse();$('historyList').innerHTML=list.length?list.map(x=>`<div class="listitem"><div><strong>${esc(x.name)} <span class="pill">${esc(x.muscle)}</span></strong><small>${x.date.split('-').reverse().join('/')} · ${x.sets} sèries · ${x.reps} repeticions</small></div><button class="btn danger small" data-dellog="${x.id}">Elimina</button></div>`).join(''):'<p class="muted">No hi ha registres per mostrar.</p>';document.querySelectorAll('[data-dellog]').forEach(b=>b.onclick=()=>{if(confirm('Eliminar aquest registre?')){db.logs=db.logs.filter(x=>x.id!==b.dataset.dellog);persist();renderAll()}})}
+$('historyFilter').onchange=renderHistory;$('historyMuscle').onchange=renderHistory;
+function drawChart(){let c=$('chart'),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);let name=$('chartExercise').value;let a=db.logs.filter(x=>!name||x.name===name).slice(-12);ctx.strokeStyle='#354960';ctx.fillStyle='#a9b8ca';ctx.lineWidth=1;for(let i=0;i<5;i++){let y=20+i*(h-50)/4;ctx.beginPath();ctx.moveTo(42,y);ctx.lineTo(w-12,y);ctx.stroke()}if(!a.length){ctx.fillText('Encara no hi ha dades per dibuixar',55,120);return}let max=Math.max(1,...a.map(x=>x.reps)),step=(w-65)/Math.max(1,a.length-1);ctx.strokeStyle='#65ddb1';ctx.lineWidth=3;ctx.beginPath();a.forEach((x,i)=>{let px=45+i*step,py=h-30-(x.reps/max)*(h-65);if(!i)ctx.moveTo(px,py);else ctx.lineTo(px,py)});ctx.stroke();a.forEach((x,i)=>{let px=45+i*step,py=h-30-(x.reps/max)*(h-65);ctx.fillStyle='#65ddb1';ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#a9b8ca';ctx.font='11px sans-serif';ctx.fillText(x.reps,px-7,py-10)})}
+function renderProgress(){let names=[...new Set(db.logs.map(x=>x.name))].sort(),v=$('chartExercise').value;$('chartExercise').innerHTML='<option value="">Tots els exercicis</option>'+names.map(n=>`<option>${esc(n)}</option>`).join('');$('chartExercise').value=v;drawChart();let from=new Date();from.setDate(from.getDate()-29);let a=db.logs.filter(x=>new Date(x.date+'T12:00:00')>=from);$('mDays').textContent=new Set(a.map(x=>x.date)).size;$('mSets').textContent=a.reduce((s,x)=>s+x.sets,0);$('mReps').textContent=a.reduce((s,x)=>s+x.reps,0)}
+$('chartExercise').onchange=drawChart;
+function renderAll(){renderRoutines();renderGoal();renderCalendar();renderHistory();renderProgress();$('doneExercises').textContent=todayLogs().length}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===b.dataset.page));renderAll()});
+function download(blob,name){let url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)}
+$('backup').onclick=()=>download(new Blob([JSON.stringify({app:'ENTRENA',version:2,exported:new Date().toISOString(),data:db},null,2)],{type:'application/json'}),'entrena-copia-'+today()+'.json');
+$('restoreBtn').onclick=()=>$('restoreFile').click();
+$('restoreFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let obj=JSON.parse(await f.text()),d=obj.data||obj;if(!Array.isArray(d.logs)||!Array.isArray(d.routines))throw Error('format');if(!confirm('La importació substituirà les dades actuals. Continua?'))return;db={logs:d.logs,routines:d.routines,goal:Math.max(1,Math.min(7,+d.goal||3))};persist();renderAll();alert('Còpia restaurada correctament.')}catch(err){alert('No s’ha pogut importar. Comprova que sigui una còpia ENTRENA vàlida.')}e.target.value=''};
+$('excel').onclick=()=>{const escXml=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');const sheet=(name,rows)=>`<Worksheet ss:Name="${name}"><Table>${rows.map(row=>'<Row>'+row.map(v=>`<Cell><Data ss:Type="${typeof v==='number'?'Number':'String'}">${escXml(v)}</Data></Cell>`).join('')+'</Row>').join('')}</Table></Worksheet>`;let hist=[['Data','Exercici','Grup muscular','Sèries','Repeticions'],...db.logs.map(x=>[x.date,x.name,x.muscle,x.sets,x.reps])],ruts=[['Rutina','Exercici','Grup muscular','Sèries previstes','Repeticions previstes'],...db.routines.flatMap(r=>r.items.map(x=>[r.name,x.name,x.muscle,x.sets,x.reps]))],goals=[['Objectiu','Dies per setmana'],['Objectiu setmanal',db.goal]];let xml=`<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">${sheet('Historial',hist)}${sheet('Rutines',ruts)}${sheet('Objectius',goals)}</Workbook>`;download(new Blob([xml],{type:'application/vnd.ms-excel'}),'entrena-'+today()+'.xls')};
+$('deleteAll').onclick=()=>{if(confirm('S’esborraran permanentment totes les rutines i l’historial d’aquest navegador. Has fet una còpia de seguretat?')){db=fresh();persist();renderAll()}};
+persist();updateCounters();renderAll();renderTimer();
+if('serviceWorker'in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('./sw.js').catch(()=>{});
+})();
+</script></body></html>

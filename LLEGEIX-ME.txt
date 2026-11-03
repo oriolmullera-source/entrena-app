@@ -1,0 +1,15 @@
+ENTRENA v2 — instal·lació local
+
+1. Descomprimeix el ZIP.
+2. Per obrir-la com a pàgina local, obre index.html al navegador. La majoria de funcions funcionen sense connexió després d'obrir-la.
+3. Per instal·lar-la com a PWA a iPhone, els fitxers han d'estar allotjats en HTTPS (per exemple GitHub Pages). Obre l'adreça a Safari > Compartir > Afegeix a la pantalla d'inici.
+4. Android: obre l'adreça HTTPS amb Chrome > menú > Instal·la aplicació.
+
+DADES
+- Les dades s'emmagatzemen al navegador del dispositiu.
+- A Dades > Exporta còpia JSON, crea còpies periòdiques.
+- En un dispositiu nou, obre ENTRENA i importa el fitxer JSON.
+- Exporta dades a Excel genera un llibre .xls compatible amb Excel/Numbers/LibreOffice.
+
+TEMPORITZADOR — LIMITACIÓ IMPORTANT
+El rellotge es basa en marques de temps, de manera que recupera el temps transcorregut quan tornes a l'app. L'app intenta mantenir la pantalla activa mentre està oberta (si el navegador ho permet). iOS i Android poden suspendre pàgines web en segon pla; per això no es pot garantir un avís sonor exacte amb la pantalla bloquejada o mentre s'utilitza una altra app. Per a alarmes garantides en segon pla cal una aplicació nativa amb permisos i serveis de temporització/notificacions del sistema.
