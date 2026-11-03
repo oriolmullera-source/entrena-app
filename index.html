@@ -157,11 +157,13 @@ function timerTick(){
 function startSession(){
  if(!activeRoutine)return;
  const x=normalizedItem(currentItem());
+ if(session.stage==='work'){
+  $('timerState').textContent='Treball · '+x.name;sound();beginStage('work',session.remaining);return;
+ }
+ if(session.stage==='rest'){
+  $('timerState').textContent='Pausa · '+x.name;sound();beginStage('rest',session.remaining);return;
+ }
  if(session.stage==='idle'||session.stage==='ready'){
-  session.repsDone=session.repsDone||0;
-  $('timerState').textContent='Treball · '+x.name;
-  sound();beginStage('work',x.workSeconds);
- }else if(session.stage==='rest'){
   $('timerState').textContent='Treball · '+x.name;sound();beginStage('work',x.workSeconds);
  }
 }
