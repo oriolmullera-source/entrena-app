@@ -87,7 +87,7 @@ const pad=n=>String(n).padStart(2,'0'),dateKey=d=>d.getFullYear()+'-'+pad(d.getM
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=s=>pad(Math.floor(s/60))+':'+pad(s%60);
 let reps=0,sets=0,routineDraft=[],activeRoutine=null,activeRoutineIndex=0,monthDate=new Date(new Date().getFullYear(),new Date().getMonth(),1);
-let session={stage:'idle',running:false,remaining:0,startAt:0,seriesDone:0,seriesAttempted:0,incomplete:0,repsDone:0,exerciseReps:0,exerciseSets:0,nextCueAt:0};
+let session={stage:'idle',running:false,remaining:0,startAt:0,seriesDone:0,seriesAttempted:0,incomplete:0,incompleteTotal:0,repsDone:0,exerciseReps:0,exerciseSets:0,nextCueAt:0};
 let timerLoop=null,wakeLock=null,audioContext=null;
 const soundOptions=[{f:[880],w:'sine',d:.18},{f:[660,990],w:'sine',d:.13},{f:[740,740],w:'square',d:.09},{f:[520],w:'triangle',d:.28},{f:[330],w:'sine',d:.32},{f:[1040],w:'square',d:.12},{f:[880,660,880],w:'sawtooth',d:.09},{f:[523,659,784],w:'triangle',d:.12},{f:[440,660,880],w:'sine',d:.11},{f:[880,660,440],w:'triangle',d:.14}];
 function ensureAudio(){const C=window.AudioContext||window.webkitAudioContext;if(!C)throw new Error('Web Audio no disponible');if(!audioContext)audioContext=new C();if(audioContext.state==='suspended')audioContext.resume();return audioContext}
@@ -101,7 +101,7 @@ function renderSession(){
  const x=currentItem(),p=$('activeRoutinePanel');
  if(!activeRoutine){p.textContent='Carrega una rutina per començar.';$('exerciseLabel').textContent='Cap exercici seleccionat';$('sets').textContent='0/0';$('reps').textContent='0';$('timerStart').disabled=true;$('timerPause').disabled=true;$('nextSeries').disabled=true;return}
  const item=normalizedItem(x);$('exerciseLabel').textContent=(activeRoutineIndex+1)+'. '+item.name+' · '+item.muscle;
- $('sets').textContent=session.seriesDone+'/'+item.sets;$('reps').textContent=session.repsDone;$('incompleteCount').textContent=session.incomplete;
+ $('sets').textContent=session.seriesDone+'/'+item.sets;$('reps').textContent=session.repsDone;$('incompleteCount').textContent=session.incompleteTotal;
  const cueSeconds=item.workSeconds/item.reps*item.beepEveryReps;
  p.innerHTML='<strong>'+esc(activeRoutine.name)+'</strong><br>Exercici '+(activeRoutineIndex+1)+' de '+activeRoutine.items.length+' · '+esc(item.name)+'<br>Sèrie '+Math.min(session.seriesAttempted+1,item.sets)+' de '+item.sets+' · '+item.workSeconds+' s · avís cada '+item.beepEveryReps+' rep. ('+cueSeconds.toFixed(1)+' s) · '+(item.restMode==='manual'?'pausa manual':item.restSeconds+' s de pausa');
  $('timerStart').disabled=session.running||session.stage==='manualRest'||session.stage==='done';
@@ -123,7 +123,7 @@ function saveSeriesLog(completed){
 }
 function beginStage(stage,seconds){
  session.stage=stage;session.remaining=seconds;session.running=true;session.startAt=Date.now();
- if(stage==='work'){const x=normalizedItem(currentItem());session.nextCueAt=(x.workSeconds/x.reps)*x.beepEveryReps}
+ if(stage==='work'){const x=normalizedItem(currentItem());session.nextCueAt=1000*x.workSeconds/x.reps*x.beepEveryReps}
  clearInterval(timerLoop);timerLoop=setInterval(timerTick,200);requestWake();
  renderSession();renderTimer();
 }
@@ -153,15 +153,16 @@ function completeSeries(){
 function abandonSeries(){
  if(!activeRoutine||session.stage!=='work')return;
  const x=normalizedItem(currentItem());
- session.running=false;clearInterval(timerLoop);releaseWake();session.seriesAttempted++;session.incomplete++;
+ timerTick();if(session.stage!=='work')return;
+ session.running=false;clearInterval(timerLoop);releaseWake();session.seriesAttempted++;session.incomplete++;session.incompleteTotal++;
  saveSeriesLog(false);sound();renderSession();afterSeries(x,false);
 }
 function timerTick(){
  if(!session.running)return;
  const elapsed=Math.floor((Date.now()-session.startAt)/1000);
  if(session.stage==='work'){
-  const x=normalizedItem(currentItem()),cueEvery=x.workSeconds/x.reps*x.beepEveryReps;
-  if(elapsed>=session.nextCueAt&&elapsed<session.remaining){sound();do{session.nextCueAt+=cueEvery}while(session.nextCueAt<=elapsed)}
+  const x=normalizedItem(currentItem()),elapsedMs=Date.now()-session.startAt,cueEveryMs=1000*x.workSeconds/x.reps*x.beepEveryReps;
+  if(elapsedMs>=session.nextCueAt&&elapsed<session.remaining){sound();do{session.nextCueAt+=cueEveryMs}while(session.nextCueAt<=elapsedMs)}
  }
  if(elapsed>=session.remaining){
   session.running=false;clearInterval(timerLoop);releaseWake();
@@ -193,10 +194,11 @@ function pauseSession(){
 function nextSeries(){
  if(session.stage==='manualRest'){session.stage='ready';$('timerState').textContent='Pausa acabada · següent sèrie';renderSession();renderTimer()}
 }
-function testSound(){try{ensureAudio();sound();$('timerState').textContent='Prova de so · si no el sents, comprova el volum i la sortida d’àudio de l’iPhone'}catch(e){$('timerState').textContent='Aquest navegador no permet reproduir àudio'}}
+function testSound(){try{const ctx=ensureAudio();if(ctx.state==='suspended')ctx.resume();const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='sine';osc.frequency.value=880;gain.gain.value=.18;osc.connect(gain);gain.connect(ctx.destination);osc.start();osc.stop(ctx.currentTime+.22);$('timerState').textContent='Prova de so enviada · comprova el volum i que l’iPhone no estigui en silenci'}catch(e){$('timerState').textContent='Aquest navegador no permet reproduir àudio'}}
 function resetSession(){
+ if(session.stage==='work')abandonSeries();
  if(session.running)pauseSession();
- activeRoutine=null;activeRoutineIndex=0;session={stage:'idle',running:false,remaining:0,startAt:0,seriesDone:0,repsDone:0,exerciseReps:0,exerciseSets:0};
+ activeRoutine=null;activeRoutineIndex=0;session={stage:'idle',running:false,remaining:0,startAt:0,seriesDone:0,seriesAttempted:0,incomplete:0,incompleteTotal:0,repsDone:0,exerciseReps:0,exerciseSets:0,nextCueAt:0};
  clearInterval(timerLoop);releaseWake();$('routineSelect').value='';$('timerState').textContent='Preparat · carrega una rutina';renderSession();renderTimer();
 }
 $('timerStart').onclick=startSession;$('timerPause').onclick=pauseSession;$('nextSeries').onclick=nextSeries;$('abandonSeries').onclick=abandonSeries;$('timerReset').onclick=resetSession;$('testSound').onclick=testSound;
@@ -218,7 +220,7 @@ function showDay(key){let a=db.logs.filter(x=>x.date===key);$('selectedDay').inn
 $('prevMonth').onclick=()=>{monthDate.setMonth(monthDate.getMonth()-1);renderCalendar()};$('nextMonth').onclick=()=>{monthDate.setMonth(monthDate.getMonth()+1);renderCalendar()};
 function renderHistory(){let names=[...new Set(db.logs.map(x=>x.name))].sort(),filter=$('historyFilter').value,muscle=$('historyMuscle').value;$('historyFilter').innerHTML='<option value="">Tots els exercicis</option>'+names.map(n=>`<option>${esc(n)}</option>`).join('');$('historyFilter').value=filter;$('historyMuscle').value=muscle;let list=db.logs.filter(x=>(!filter||x.name===filter)&&(!muscle||x.muscle===muscle)).slice().reverse();$('historyList').innerHTML=list.length?list.map(x=>`<div class="listitem"><div><strong>${esc(x.name)} <span class="pill">${esc(x.muscle)}</span></strong><small>${x.date.split('-').reverse().join('/')} · ${x.incomplete?'SÈRIE INCOMPLETA':x.sets+' sèrie completada · '+x.reps+' repeticions'}</small></div><button class="btn danger small" data-dellog="${x.id}">Elimina</button></div>`).join(''):'<p class="muted">No hi ha registres per mostrar.</p>';document.querySelectorAll('[data-dellog]').forEach(b=>b.onclick=()=>{if(confirm('Eliminar aquest registre?')){db.logs=db.logs.filter(x=>x.id!==b.dataset.dellog);persist();renderAll()}})}
 $('historyFilter').onchange=renderHistory;$('historyMuscle').onchange=renderHistory;
-function drawChart(){let c=$('chart'),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);let name=$('chartExercise').value;let a=db.logs.filter(x=>!name||x.name===name).slice(-12);ctx.strokeStyle='#354960';ctx.fillStyle='#a9b8ca';ctx.lineWidth=1;for(let i=0;i<5;i++){let y=20+i*(h-50)/4;ctx.beginPath();ctx.moveTo(42,y);ctx.lineTo(w-12,y);ctx.stroke()}if(!a.length){ctx.fillText('Encara no hi ha dades per dibuixar',55,120);return}let max=Math.max(1,...a.map(x=>x.reps)),step=(w-65)/Math.max(1,a.length-1);ctx.strokeStyle='#65ddb1';ctx.lineWidth=3;ctx.beginPath();a.forEach((x,i)=>{let px=45+i*step,py=h-30-(x.reps/max)*(h-65);if(!i)ctx.moveTo(px,py);else ctx.lineTo(px,py)});ctx.stroke();a.forEach((x,i)=>{let px=45+i*step,py=h-30-(x.reps/max)*(h-65);ctx.fillStyle='#65ddb1';ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#a9b8ca';ctx.font='11px sans-serif';ctx.fillText(x.reps,px-7,py-10)})}
+function drawChart(){let c=$('chart'),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);let name=$('chartExercise').value;let a=db.logs.filter(x=>x.completed!==false&&(!name||x.name===name)).slice(-12);ctx.strokeStyle='#354960';ctx.fillStyle='#a9b8ca';ctx.lineWidth=1;for(let i=0;i<5;i++){let y=20+i*(h-50)/4;ctx.beginPath();ctx.moveTo(42,y);ctx.lineTo(w-12,y);ctx.stroke()}if(!a.length){ctx.fillText('Encara no hi ha dades per dibuixar',55,120);return}let max=Math.max(1,...a.map(x=>x.reps)),step=(w-65)/Math.max(1,a.length-1);ctx.strokeStyle='#65ddb1';ctx.lineWidth=3;ctx.beginPath();a.forEach((x,i)=>{let px=45+i*step,py=h-30-(x.reps/max)*(h-65);if(!i)ctx.moveTo(px,py);else ctx.lineTo(px,py)});ctx.stroke();a.forEach((x,i)=>{let px=45+i*step,py=h-30-(x.reps/max)*(h-65);ctx.fillStyle='#65ddb1';ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#a9b8ca';ctx.font='11px sans-serif';ctx.fillText(x.reps,px-7,py-10)})}
 function renderProgress(){let names=[...new Set(db.logs.map(x=>x.name))].sort(),v=$('chartExercise').value;$('chartExercise').innerHTML='<option value="">Tots els exercicis</option>'+names.map(n=>`<option>${esc(n)}</option>`).join('');$('chartExercise').value=v;drawChart();let from=new Date();from.setDate(from.getDate()-29);let a=db.logs.filter(x=>new Date(x.date+'T12:00:00')>=from);$('mDays').textContent=new Set(a.map(x=>x.date)).size;$('mSets').textContent=a.filter(x=>x.completed!==false).reduce((s,x)=>s+x.sets,0);$('mReps').textContent=a.filter(x=>x.completed!==false).reduce((s,x)=>s+x.reps,0);$('mIncomplete').textContent=a.filter(x=>x.incomplete===true).length}
 $('chartExercise').onchange=drawChart;
 function renderAll(){renderRoutines();renderGoal();renderCalendar();renderHistory();renderProgress();$('doneExercises').textContent=todayLogs().length}
